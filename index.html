@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Collaborative Text Editor</title>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const socket = io();
+      const textarea = document.getElementById('text');
+      const userId = Math.random().toString(36).substr(2, 9); // Generate a random user ID
+
+      textarea.addEventListener('input', () => {
+        const text = textarea.value;
+        socket.emit('text change', { text: text, userId: userId });
+      });
+
+      socket.on('text update', (data) => {
+        if (data.userId !== userId) {
+          if (textarea.value !== data.text) {
+            textarea.value = data.text;
+          }
+        }
+      });
+    });
+  </script>
+</head>
+<body>
+  <textarea id="text" rows="10" cols="50"></textarea>
+</body>
